@@ -5,8 +5,8 @@
  */
 package servlets;
 
-import controllers.RegionController;
-import icontrollers.IRegionController;
+import controllers.EmployeeController;
+import icontrollers.IEmployeeController;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.RequestDispatcher;
@@ -21,8 +21,8 @@ import tools.HibernateUtil;
  *
  * @author KHAIRUL MUNA
  */
-@WebServlet(name = "Region", urlPatterns = {"/region"})
-public class Region extends HttpServlet {
+@WebServlet(name = "Employee", urlPatterns = {"/employee"})
+public class Employee extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -33,16 +33,16 @@ public class Region extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    IRegionController irc = new RegionController(HibernateUtil.getSessionFactory());
+    IEmployeeController iec = new EmployeeController(HibernateUtil.getSessionFactory());
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
-            request.getSession().setAttribute("regions", irc.getAll());
+            request.getSession().setAttribute("employees", iec.getAll());
 //            response.sendRedirect("region.jsp");
 
-            RequestDispatcher rd = request.getRequestDispatcher("region.jsp");
+            RequestDispatcher rd = request.getRequestDispatcher("employee.jsp");
             rd.forward(request, response);
 
         }
@@ -60,17 +60,7 @@ public class Region extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String action = request.getParameter("action");
-        if (action != null) {
-
-            if (action.equals("delete")) {
-                irc.delete(request.getParameter("id"));
-            } else if (action.equals("update")) {
-                request.getSession().setAttribute("region", irc.getById(request.getParameter("id")));
-            }
-        }
         processRequest(request, response);
-
     }
 
     /**
@@ -84,12 +74,7 @@ public class Region extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String id = request.getParameter("regionId");
-        String name = request.getParameter("regionName");
-
-        if (irc.save(id, name).equals("Success")) {
-            processRequest(request, response);
-        }
+        processRequest(request, response);
     }
 
     /**
